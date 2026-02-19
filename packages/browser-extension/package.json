@@ -1,0 +1,19 @@
+{
+  "name": "@email-helper/browser-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build && node scripts/copy-assets.js",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@email-helper/shared-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "vite": "^7.0.0",
+    "@types/chrome": "^0.0.300"
+  }
+}

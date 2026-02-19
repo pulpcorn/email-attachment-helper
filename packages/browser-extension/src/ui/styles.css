@@ -1,0 +1,120 @@
+/*
+ * Email Attachment Helper - Styles
+ * Toast notification cho người cao tuổi
+ * Chữ lớn, tương phản cao, đơn giản
+ */
+
+/* Toast container - góc dưới phải */
+.email-helper-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999999;
+  max-width: 420px;
+  min-width: 320px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.email-helper-toast-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Content */
+.email-helper-toast-content {
+  background: #ffffff;
+  border: 2px solid #1a73e8;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.email-helper-toast-success {
+  border-color: #0d904f;
+  background: #f0faf4;
+}
+
+.email-helper-toast-error {
+  border-color: #d93025;
+  background: #fef0ef;
+}
+
+/* Message text - lớn, rõ ràng */
+.email-helper-toast-message {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #333333;
+  font-weight: 500;
+}
+
+/* Progress bar */
+.email-helper-progress-bar {
+  position: relative;
+  height: 24px;
+  background: #e8eaed;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.email-helper-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1a73e8, #4285f4);
+  border-radius: 12px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.email-helper-progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Button - lớn, dễ nhấn */
+.email-helper-toast-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #1a73e8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.email-helper-toast-btn:hover {
+  background: #1557b0;
+}
+
+/* Success button */
+.email-helper-toast-success .email-helper-toast-btn {
+  background: #0d904f;
+}
+
+.email-helper-toast-success .email-helper-toast-btn:hover {
+  background: #0a7a42;
+}
+
+/* Error button */
+.email-helper-toast-error .email-helper-toast-btn {
+  background: #d93025;
+}
+
+.email-helper-toast-error .email-helper-toast-btn:hover {
+  background: #b71c1c;
+}

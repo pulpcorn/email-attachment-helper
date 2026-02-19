@@ -1,0 +1,17 @@
+{
+  "name": "email-attachment-helper",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tự động upload file lớn lên cloud và chèn link khi gửi email",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  }
+}

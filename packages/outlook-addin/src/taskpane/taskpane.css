@@ -1,0 +1,142 @@
+/*
+ * Email Attachment Helper - Outlook Add-in TaskPane Styles
+ * Thiết kế cho người cao tuổi: chữ lớn, đơn giản
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #fafafa;
+  color: #333;
+}
+
+.container {
+  padding: 24px;
+  max-width: 360px;
+}
+
+/* Header */
+header h1 {
+  font-size: 22px;
+  color: #0078d4;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Status card */
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: #f0faf4;
+  border: 1px solid #0d904f;
+  margin-bottom: 20px;
+}
+
+.status-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.status-text h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.status-text p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Queue section */
+.queue-section {
+  margin-bottom: 20px;
+}
+
+.queue-section h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.queue-list {
+  list-style: none;
+}
+
+.queue-item {
+  padding: 10px 14px;
+  background: #fff8e1;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.queue-size {
+  color: #888;
+  font-size: 13px;
+}
+
+/* Info section */
+.info-section {
+  margin-bottom: 20px;
+}
+
+.info-section h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.info-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: #0078d4;
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.info-step p {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* Footer */
+footer {
+  padding-top: 16px;
+  border-top: 1px solid #e8eaed;
+  text-align: center;
+}
+
+footer p {
+  font-size: 12px;
+  color: #999;
+}

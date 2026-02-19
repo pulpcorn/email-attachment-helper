@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Attachment Helper</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 360px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #ffffff;
+      color: #333;
+      padding: 24px;
+    }
+
+    h1 {
+      font-size: 20px;
+      color: #1a73e8;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .status {
+      padding: 16px;
+      border-radius: 12px;
+      background: #f0faf4;
+      border: 1px solid #0d904f;
+      margin-bottom: 16px;
+    }
+
+    .status-label {
+      font-size: 14px;
+      color: #0d904f;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .status-value {
+      font-size: 16px;
+      color: #333;
+    }
+
+    .info {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .info strong {
+      color: #333;
+    }
+
+    .footer {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #e8eaed;
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>📎 Email Helper</h1>
+  <p class="subtitle">Tự động upload file lớn lên cloud</p>
+
+  <div class="status">
+    <div class="status-label">✅ Đang hoạt động</div>
+    <div class="status-value">Sẵn sàng xử lý file lớn</div>
+  </div>
+
+  <div class="info">
+    <p><strong>Cách dùng:</strong></p>
+    <p>Bạn chỉ cần đính kèm file bình thường. Nếu file lớn hơn 25MB, extension sẽ tự động:</p>
+    <p>1. Tải file lên Google Drive / OneDrive</p>
+    <p>2. Chèn link vào email</p>
+  </div>
+
+  <div class="footer">
+    Email Attachment Helper v0.1.0
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
