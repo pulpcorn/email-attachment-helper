@@ -35,6 +35,7 @@ jobs:
       - name: Copy manifest and icons
         run: |
           cp packages/outlook-addin/manifest.json packages/outlook-addin/dist/
+          cp packages/outlook-addin/manifest.xml packages/outlook-addin/dist/
           cp -r packages/outlook-addin/icons packages/outlook-addin/dist/
 
       - uses: actions/upload-pages-artifact@v3
