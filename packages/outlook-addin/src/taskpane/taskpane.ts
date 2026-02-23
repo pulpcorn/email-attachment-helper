@@ -1,33 +1,20 @@
 /**
  * TaskPane - Logic chính
- * Flow: Chọn file → OAuth → Upload OneDrive → Chọn quyền → Chèn link cuối email
+ * Flow: Chọn file → OAuth (Office Dialog) → Upload OneDrive → Chọn quyền → Chèn link cuối email
  */
 
-import { PublicClientApplication } from '@azure/msal-browser';
 import { OneDriveUploader } from '@email-helper/shared-core';
 import { formatLinkHtml, formatFileSize } from '@email-helper/shared-core';
 import type { FileInfo } from '@email-helper/shared-core';
 
-// ─── MSAL Config ───
-const MSAL_CLIENT_ID = '6a71bcce-b6c7-493a-a23d-c9bdcfaaee78';
-const MSAL_SCOPES = ['Files.ReadWrite', 'User.Read'];
-
-const msalInstance = new PublicClientApplication({
-  auth: {
-    clientId: MSAL_CLIENT_ID,
-    authority: 'https://login.microsoftonline.com/common',
-    redirectUri: 'https://pulpcorn.github.io/email-attachment-helper/src/taskpane/taskpane.html',
-  },
-  cache: {
-    cacheLocation: 'localStorage',
-  },
-});
+const AUTH_DIALOG_URL = 'https://pulpcorn.github.io/email-attachment-helper/src/taskpane/auth-dialog.html';
 
 const uploader = new OneDriveUploader();
 
 // ─── State ───
 let currentFile: File | null = null;
 let lastUploadResult: { fileId: string; shareLink: string } | null = null;
+let cachedAccessToken: string | null = null;
 
 interface UploadedFile {
   name: string;
@@ -38,10 +25,8 @@ interface UploadedFile {
 }
 
 // ─── Init ───
-Office.onReady(async () => {
+Office.onReady(() => {
   console.log('[Email Helper] TaskPane ready');
-
-  await initMsal();
 
   // Bind events
   document.getElementById('btn-pick-file')!.addEventListener('click', onPickFile);
@@ -86,7 +71,7 @@ async function startUpload(): Promise<void> {
   showStep('step-progress');
 
   try {
-    // Lấy access token
+    // Lấy access token qua Office Dialog
     const accessToken = await getAccessToken();
 
     // Đọc file thành ArrayBuffer
@@ -122,56 +107,50 @@ async function startUpload(): Promise<void> {
   }
 }
 
-// ─── MSAL Auth ───
-let pendingTokenResolve: ((token: string) => void) | null = null;
-
-async function initMsal(): Promise<void> {
-  await msalInstance.initialize();
-
-  // Xử lý redirect callback khi quay về sau khi đăng nhập
-  try {
-    const response = await msalInstance.handleRedirectPromise();
-    if (response && response.accessToken) {
-      // Đăng nhập thành công, tiếp tục upload
-      if (pendingTokenResolve) {
-        pendingTokenResolve(response.accessToken);
-        pendingTokenResolve = null;
-      }
-    }
-  } catch (error) {
-    console.error('[Email Helper] Redirect callback error:', error);
-  }
-}
-
-async function getAccessToken(): Promise<string> {
-  // Thử silent trước
-  const accounts = msalInstance.getAllAccounts();
-  if (accounts.length > 0) {
-    try {
-      const result = await msalInstance.acquireTokenSilent({
-        scopes: MSAL_SCOPES,
-        account: accounts[0],
-      });
-      return result.accessToken;
-    } catch {
-      // Silent fail → redirect
-    }
+// ─── Auth via Office Dialog API ───
+function getAccessToken(): Promise<string> {
+  // Nếu đã có token (cache), dùng luôn
+  if (cachedAccessToken) {
+    return Promise.resolve(cachedAccessToken);
   }
 
-  // Redirect đăng nhập (không dùng popup vì Outlook chặn)
-  // Lưu state trước khi redirect
-  localStorage.setItem('emailHelper_pendingUpload', 'true');
-  if (currentFile) {
-    localStorage.setItem('emailHelper_pendingFileName', currentFile.name);
-  }
+  return new Promise((resolve, reject) => {
+    Office.context.ui.displayDialogAsync(
+      AUTH_DIALOG_URL,
+      { height: 60, width: 40, promptBeforeOpen: false },
+      (asyncResult) => {
+        if (asyncResult.status !== Office.AsyncResultStatus.Succeeded) {
+          reject(new Error('Không thể mở cửa sổ đăng nhập'));
+          return;
+        }
 
-  await msalInstance.acquireTokenRedirect({
-    scopes: MSAL_SCOPES,
+        const dialog = asyncResult.value;
+
+        dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg: any) => {
+          dialog.close();
+
+          try {
+            const message = JSON.parse(arg.message);
+            if (message.status === 'success') {
+              cachedAccessToken = message.token;
+              resolve(message.token);
+            } else {
+              reject(new Error(message.error || 'Đăng nhập thất bại'));
+            }
+          } catch {
+            reject(new Error('Lỗi xử lý đăng nhập'));
+          }
+        });
+
+        dialog.addEventHandler(Office.EventType.DialogEventReceived, (arg: any) => {
+          // Dialog đóng bởi user
+          if (arg.error === 12006) {
+            reject(new Error('Đã đóng cửa sổ đăng nhập'));
+          }
+        });
+      },
+    );
   });
-
-  // Sẽ không bao giờ đến đây vì page redirect
-  // Token được xử lý trong handleRedirectPromise() khi quay về
-  return '';
 }
 
 // ─── Step 3: Chọn quyền ───
@@ -179,7 +158,7 @@ async function onPermissionChosen(permissionType: 'view' | 'edit'): Promise<void
   if (!lastUploadResult || !currentFile) return;
 
   try {
-    // Lấy token lại (có thể đã hết hạn)
+    // Lấy token (đã cache)
     const accessToken = await getAccessToken();
 
     // Set permission
