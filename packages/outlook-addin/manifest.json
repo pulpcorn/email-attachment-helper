@@ -37,7 +37,7 @@
           "id": "TaskPaneRuntime",
           "type": "general",
           "code": {
-            "page": "https://pulpcorn.github.io/email-attachment-helper/taskpane/taskpane.html"
+            "page": "https://pulpcorn.github.io/email-attachment-helper/src/taskpane/taskpane.html"
           }
         }
       ],

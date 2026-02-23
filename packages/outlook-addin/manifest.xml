@@ -30,7 +30,7 @@
   <FormSettings>
     <Form xsi:type="ItemEdit">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://pulpcorn.github.io/email-attachment-helper/taskpane/taskpane.html"/>
+        <SourceLocation DefaultValue="https://pulpcorn.github.io/email-attachment-helper/src/taskpane/taskpane.html"/>
       </DesktopSettings>
     </Form>
   </FormSettings>
@@ -86,7 +86,7 @@
           <bt:Image id="residIcon32" DefaultValue="https://pulpcorn.github.io/email-attachment-helper/icons/icon-32.png"/>
         </bt:Images>
         <bt:Urls>
-          <bt:Url id="residTaskPaneUrl" DefaultValue="https://pulpcorn.github.io/email-attachment-helper/taskpane/taskpane.html"/>
+          <bt:Url id="residTaskPaneUrl" DefaultValue="https://pulpcorn.github.io/email-attachment-helper/src/taskpane/taskpane.html"/>
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="residGroupLabel" DefaultValue="Email Helper"/>

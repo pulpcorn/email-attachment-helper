@@ -16,7 +16,7 @@ const msalInstance = new PublicClientApplication({
   auth: {
     clientId: MSAL_CLIENT_ID,
     authority: 'https://login.microsoftonline.com/common',
-    redirectUri: 'https://pulpcorn.github.io/email-attachment-helper/taskpane/taskpane.html',
+    redirectUri: 'https://pulpcorn.github.io/email-attachment-helper/src/taskpane/taskpane.html',
   },
   cache: {
     cacheLocation: 'localStorage',
