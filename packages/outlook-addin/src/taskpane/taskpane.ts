@@ -41,7 +41,7 @@ interface UploadedFile {
 Office.onReady(async () => {
   console.log('[Email Helper] TaskPane ready');
 
-  await msalInstance.initialize();
+  await initMsal();
 
   // Bind events
   document.getElementById('btn-pick-file')!.addEventListener('click', onPickFile);
@@ -123,6 +123,26 @@ async function startUpload(): Promise<void> {
 }
 
 // ─── MSAL Auth ───
+let pendingTokenResolve: ((token: string) => void) | null = null;
+
+async function initMsal(): Promise<void> {
+  await msalInstance.initialize();
+
+  // Xử lý redirect callback khi quay về sau khi đăng nhập
+  try {
+    const response = await msalInstance.handleRedirectPromise();
+    if (response && response.accessToken) {
+      // Đăng nhập thành công, tiếp tục upload
+      if (pendingTokenResolve) {
+        pendingTokenResolve(response.accessToken);
+        pendingTokenResolve = null;
+      }
+    }
+  } catch (error) {
+    console.error('[Email Helper] Redirect callback error:', error);
+  }
+}
+
 async function getAccessToken(): Promise<string> {
   // Thử silent trước
   const accounts = msalInstance.getAllAccounts();
@@ -134,15 +154,24 @@ async function getAccessToken(): Promise<string> {
       });
       return result.accessToken;
     } catch {
-      // Silent fail → popup
+      // Silent fail → redirect
     }
   }
 
-  // Popup đăng nhập
-  const result = await msalInstance.acquireTokenPopup({
+  // Redirect đăng nhập (không dùng popup vì Outlook chặn)
+  // Lưu state trước khi redirect
+  localStorage.setItem('emailHelper_pendingUpload', 'true');
+  if (currentFile) {
+    localStorage.setItem('emailHelper_pendingFileName', currentFile.name);
+  }
+
+  await msalInstance.acquireTokenRedirect({
     scopes: MSAL_SCOPES,
   });
-  return result.accessToken;
+
+  // Sẽ không bao giờ đến đây vì page redirect
+  // Token được xử lý trong handleRedirectPromise() khi quay về
+  return '';
 }
 
 // ─── Step 3: Chọn quyền ───
