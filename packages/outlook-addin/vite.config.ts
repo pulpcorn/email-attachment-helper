@@ -11,7 +11,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         'taskpane/taskpane': resolve(__dirname, 'src/taskpane/taskpane.html'),
-        'taskpane/auth-dialog': resolve(__dirname, 'src/taskpane/auth-dialog.html'),
       },
     },
     minify: false,

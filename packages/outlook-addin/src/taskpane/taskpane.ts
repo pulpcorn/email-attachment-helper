@@ -1,20 +1,38 @@
 /**
  * TaskPane - Logic chính
- * Flow: Chọn file → OAuth (Office Dialog) → Upload OneDrive → Chọn quyền → Chèn link cuối email
+ * Flow: Đăng nhập (nếu cần) → Chọn file → Upload OneDrive → Chọn quyền → Chèn link
+ *
+ * Auth: MSAL redirect trực tiếp trong TaskPane
+ * - Lần đầu: trang tự chuyển sang Microsoft login → redirect về
+ * - Sau đó: token cached, acquireTokenSilent
  */
 
+import { PublicClientApplication } from '@azure/msal-browser';
 import { OneDriveUploader } from '@email-helper/shared-core';
 import { formatLinkHtml, formatFileSize } from '@email-helper/shared-core';
 import type { FileInfo } from '@email-helper/shared-core';
 
-const AUTH_DIALOG_URL = 'https://pulpcorn.github.io/email-attachment-helper/src/taskpane/auth-dialog.html';
+// ─── Config ───
+const MSAL_CLIENT_ID = '6a71bcce-b6c7-493a-a23d-c9bdcfaaee78';
+const MSAL_SCOPES = ['Files.ReadWrite', 'User.Read'];
+
+const msalInstance = new PublicClientApplication({
+  auth: {
+    clientId: MSAL_CLIENT_ID,
+    authority: 'https://login.microsoftonline.com/common',
+    redirectUri: window.location.origin + window.location.pathname,
+  },
+  cache: {
+    cacheLocation: 'localStorage',
+  },
+});
 
 const uploader = new OneDriveUploader();
 
 // ─── State ───
 let currentFile: File | null = null;
 let lastUploadResult: { fileId: string; shareLink: string } | null = null;
-let cachedAccessToken: string | null = null;
+let cachedToken: string | null = null;
 
 interface UploadedFile {
   name: string;
@@ -25,20 +43,92 @@ interface UploadedFile {
 }
 
 // ─── Init ───
-Office.onReady(() => {
+Office.onReady(async () => {
   console.log('[Email Helper] TaskPane ready');
 
-  // Bind events
+  // 1. Init MSAL + xử lý redirect callback (nếu vừa login xong quay về)
+  await msalInstance.initialize();
+  try {
+    const response = await msalInstance.handleRedirectPromise();
+    if (response && response.accessToken) {
+      cachedToken = response.accessToken;
+      console.log('[Email Helper] Login thành công!');
+      // Hiện thông báo đã đăng nhập
+      showLoginStatus(true, response.account?.username || '');
+    }
+  } catch (error) {
+    console.error('[Email Helper] Redirect error:', error);
+  }
+
+  // Kiểm tra đã có account chưa
+  const accounts = msalInstance.getAllAccounts();
+  if (accounts.length > 0) {
+    showLoginStatus(true, accounts[0].username || '');
+  }
+
+  // 2. Bind events
   document.getElementById('btn-pick-file')!.addEventListener('click', onPickFile);
   document.getElementById('file-input')!.addEventListener('change', onFileSelected);
   document.getElementById('btn-view')!.addEventListener('click', () => onPermissionChosen('view'));
   document.getElementById('btn-edit')!.addEventListener('click', () => onPermissionChosen('edit'));
   document.getElementById('btn-upload-more')!.addEventListener('click', resetToUpload);
   document.getElementById('btn-retry')!.addEventListener('click', resetToUpload);
+  document.getElementById('btn-login')?.addEventListener('click', doLogin);
 
-  // Load file manager
+  // 3. Load file manager
   renderFileManager();
 });
+
+// ─── Auth ───
+async function doLogin(): Promise<void> {
+  // Redirect sang Microsoft login (trang sẽ reload sau khi login)
+  await msalInstance.acquireTokenRedirect({
+    scopes: MSAL_SCOPES,
+  });
+}
+
+async function getAccessToken(): Promise<string> {
+  if (cachedToken) return cachedToken;
+
+  // Thử silent
+  const accounts = msalInstance.getAllAccounts();
+  if (accounts.length > 0) {
+    try {
+      const result = await msalInstance.acquireTokenSilent({
+        scopes: MSAL_SCOPES,
+        account: accounts[0],
+      });
+      cachedToken = result.accessToken;
+      return result.accessToken;
+    } catch {
+      // Silent fail
+    }
+  }
+
+  // Chưa đăng nhập → redirect
+  await msalInstance.acquireTokenRedirect({
+    scopes: MSAL_SCOPES,
+  });
+  // Page sẽ reload, không bao giờ đến đây
+  throw new Error('Đang chuyển trang đăng nhập...');
+}
+
+function showLoginStatus(loggedIn: boolean, username: string): void {
+  const loginSection = document.getElementById('step-login');
+  const uploadSection = document.getElementById('step-upload');
+  if (loginSection && uploadSection) {
+    if (loggedIn) {
+      loginSection.style.display = 'none';
+      uploadSection.style.display = 'block';
+      // Hiện username nếu có element
+      const userEl = document.getElementById('logged-in-user');
+      if (userEl) userEl.textContent = `Đã đăng nhập: ${username}`;
+    } else {
+      loginSection.style.display = 'block';
+      uploadSection.style.display = 'none';
+    }
+  }
+}
 
 // ─── Step 1: Chọn file ───
 function onPickFile(): void {
@@ -57,10 +147,8 @@ async function onFileSelected(e: Event): Promise<void> {
   document.getElementById('file-size')!.textContent = `(${formatFileSize(currentFile.size)})`;
   fileInfoEl.style.display = 'block';
 
-  // Reset input để có thể chọn lại cùng file
   input.value = '';
 
-  // Bắt đầu upload
   await startUpload();
 }
 
@@ -71,10 +159,8 @@ async function startUpload(): Promise<void> {
   showStep('step-progress');
 
   try {
-    // Lấy access token qua Office Dialog
     const accessToken = await getAccessToken();
 
-    // Đọc file thành ArrayBuffer
     const arrayBuffer = await currentFile.arrayBuffer();
     const fileInfo: FileInfo = {
       name: currentFile.name,
@@ -83,7 +169,6 @@ async function startUpload(): Promise<void> {
       data: arrayBuffer,
     };
 
-    // Upload
     const result = await uploader.upload(fileInfo, {
       accessToken,
       onProgress: (progress) => {
@@ -99,58 +184,13 @@ async function startUpload(): Promise<void> {
       shareLink: result.shareLink,
     };
 
-    // Hiện step chọn quyền
     showStep('step-permission');
   } catch (error: any) {
     console.error('[Email Helper] Upload error:', error);
-    showError(error.message || 'Có lỗi xảy ra khi upload file.');
+    if (error.message !== 'Đang chuyển trang đăng nhập...') {
+      showError(error.message || 'Có lỗi xảy ra khi upload file.');
+    }
   }
-}
-
-// ─── Auth via Office Dialog API ───
-function getAccessToken(): Promise<string> {
-  // Nếu đã có token (cache), dùng luôn
-  if (cachedAccessToken) {
-    return Promise.resolve(cachedAccessToken);
-  }
-
-  return new Promise((resolve, reject) => {
-    Office.context.ui.displayDialogAsync(
-      AUTH_DIALOG_URL,
-      { height: 60, width: 40, promptBeforeOpen: false, displayInIframe: true },
-      (asyncResult) => {
-        if (asyncResult.status !== Office.AsyncResultStatus.Succeeded) {
-          reject(new Error('Không thể mở cửa sổ đăng nhập'));
-          return;
-        }
-
-        const dialog = asyncResult.value;
-
-        dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg: any) => {
-          dialog.close();
-
-          try {
-            const message = JSON.parse(arg.message);
-            if (message.status === 'success') {
-              cachedAccessToken = message.token;
-              resolve(message.token);
-            } else {
-              reject(new Error(message.error || 'Đăng nhập thất bại'));
-            }
-          } catch {
-            reject(new Error('Lỗi xử lý đăng nhập'));
-          }
-        });
-
-        dialog.addEventHandler(Office.EventType.DialogEventReceived, (arg: any) => {
-          // Dialog đóng bởi user
-          if (arg.error === 12006) {
-            reject(new Error('Đã đóng cửa sổ đăng nhập'));
-          }
-        });
-      },
-    );
-  });
 }
 
 // ─── Step 3: Chọn quyền ───
@@ -158,17 +198,14 @@ async function onPermissionChosen(permissionType: 'view' | 'edit'): Promise<void
   if (!lastUploadResult || !currentFile) return;
 
   try {
-    // Lấy token (đã cache)
     const accessToken = await getAccessToken();
 
-    // Set permission
     const shareLink = await uploader.setPermission(
       lastUploadResult.fileId,
       accessToken,
       permissionType,
     );
 
-    // Format link HTML
     const linkHtml = formatLinkHtml({
       fileName: currentFile.name,
       fileSize: currentFile.size,
@@ -176,10 +213,8 @@ async function onPermissionChosen(permissionType: 'view' | 'edit'): Promise<void
       provider: 'onedrive',
     });
 
-    // Chèn link vào cuối email
     await insertLinkToEmail(linkHtml);
 
-    // Lưu vào file manager
     saveUploadedFile({
       name: currentFile.name,
       size: currentFile.size,
@@ -188,7 +223,6 @@ async function onPermissionChosen(permissionType: 'view' | 'edit'): Promise<void
       uploadedAt: Date.now(),
     });
 
-    // Hiện step hoàn tất
     showStep('step-done');
     renderFileManager();
   } catch (error: any) {
@@ -206,7 +240,6 @@ function insertLinkToEmail(linkHtml: string): Promise<void> {
       return;
     }
 
-    // Append vào cuối body
     item.body.getAsync(Office.CoercionType.Html, (result) => {
       if (result.status !== Office.AsyncResultStatus.Succeeded) {
         reject(new Error('Không thể đọc email'));
@@ -243,7 +276,6 @@ function getUploadedFiles(): UploadedFile[] {
 function saveUploadedFile(file: UploadedFile): void {
   const files = getUploadedFiles();
   files.unshift(file);
-  // Giữ tối đa 20 files
   if (files.length > 20) files.length = 20;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
 }
@@ -265,12 +297,9 @@ async function reinsertFile(file: UploadedFile): Promise<void> {
 
   try {
     await insertLinkToEmail(linkHtml);
-    // Flash hiệu ứng thành công
     const doneSection = document.getElementById('step-done')!;
     doneSection.style.display = 'block';
-    setTimeout(() => {
-      doneSection.style.display = 'none';
-    }, 2000);
+    setTimeout(() => { doneSection.style.display = 'none'; }, 2000);
   } catch (error: any) {
     showError(error.message || 'Không thể chèn link.');
   }
@@ -306,25 +335,20 @@ function renderFileManager(): void {
     </li>`;
   }).join('');
 
-  // Bind events
   list.querySelectorAll('[data-action]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const target = e.currentTarget as HTMLElement;
       const action = target.dataset.action;
       const index = parseInt(target.dataset.index!, 10);
-
-      if (action === 'reinsert') {
-        reinsertFile(files[index]);
-      } else if (action === 'remove') {
-        removeUploadedFile(index);
-      }
+      if (action === 'reinsert') reinsertFile(files[index]);
+      else if (action === 'remove') removeUploadedFile(index);
     });
   });
 }
 
 // ─── UI Helpers ───
 function showStep(stepId: string): void {
-  const steps = ['step-upload', 'step-progress', 'step-permission', 'step-done', 'step-error'];
+  const steps = ['step-login', 'step-upload', 'step-progress', 'step-permission', 'step-done', 'step-error'];
   for (const id of steps) {
     const el = document.getElementById(id);
     if (el) el.style.display = id === stepId ? 'block' : 'none';
@@ -339,16 +363,11 @@ function showError(message: string): void {
 function resetToUpload(): void {
   currentFile = null;
   lastUploadResult = null;
-
-  // Reset progress
   const bar = document.getElementById('progress-bar');
   const text = document.getElementById('progress-text');
   if (bar) bar.style.width = '0%';
   if (text) text.textContent = '0%';
-
-  // Ẩn file info
   const fileInfo = document.getElementById('file-info');
   if (fileInfo) fileInfo.style.display = 'none';
-
   showStep('step-upload');
 }

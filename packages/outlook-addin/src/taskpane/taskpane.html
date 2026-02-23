@@ -12,10 +12,19 @@
     <header>
       <h1>📎 Email Helper</h1>
       <p class="subtitle">Upload file lên OneDrive</p>
+      <p id="logged-in-user" class="logged-in-user"></p>
     </header>
 
+    <!-- Step 0: Đăng nhập -->
+    <section id="step-login" class="step-section">
+      <p style="font-size:17px;text-align:center;margin-bottom:16px;">Đăng nhập tài khoản Microsoft để bắt đầu</p>
+      <button id="btn-login" class="btn-primary">
+        🔐 Đăng nhập Microsoft
+      </button>
+    </section>
+
     <!-- Step 1: Chọn file -->
-    <section id="step-upload" class="step-section">
+    <section id="step-upload" class="step-section" style="display: none;">
       <button id="btn-pick-file" class="btn-primary">
         📂 Chọn file để upload
       </button>
@@ -77,10 +86,9 @@
     </section>
 
     <footer>
-      <p>Email Attachment Helper v0.2.0</p>
+      <p>Email Attachment Helper v0.2.1</p>
     </footer>
   </div>
 
-  <script type="module" src="taskpane.ts"></script>
 </body>
 </html>
