@@ -229,7 +229,11 @@ export class OneDriveUploader implements UploadProvider {
    * Bước 3: Tạo sharing link
    * "Anyone with view permission"
    */
-  async setPermission(fileId: string, accessToken: string): Promise<string> {
+  async setPermission(
+    fileId: string,
+    accessToken: string,
+    permissionType: 'view' | 'edit' = 'view',
+  ): Promise<string> {
     const response = await fetch(
       `${GRAPH_API_BASE}/me/drive/items/${fileId}/createLink`,
       {
@@ -239,7 +243,7 @@ export class OneDriveUploader implements UploadProvider {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          type: 'view',
+          type: permissionType,
           scope: 'anonymous',
         }),
       },

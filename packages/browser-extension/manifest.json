@@ -17,7 +17,7 @@
     "https://graph.microsoft.com/*"
   ],
   "oauth2": {
-    "client_id": "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+    "client_id": "150000773848-k07ch2f7vtjt2m4vaktsrca2rdtd7ijt.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/drive.file"
     ]

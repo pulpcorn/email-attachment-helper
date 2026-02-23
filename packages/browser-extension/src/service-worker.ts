@@ -71,7 +71,7 @@ async function getGoogleAuthToken(interactive: boolean = true): Promise<string> 
  * Lấy Microsoft OAuth token qua launchWebAuthFlow
  */
 async function getMicrosoftAuthToken(): Promise<string> {
-  const clientId = 'YOUR_MICROSOFT_CLIENT_ID';
+  const clientId = '6a71bcce-b6c7-493a-a23d-c9bdcfaaee78';
   const redirectUri = chrome.identity.getRedirectURL();
   const scope = encodeURIComponent('Files.ReadWrite offline_access');
 

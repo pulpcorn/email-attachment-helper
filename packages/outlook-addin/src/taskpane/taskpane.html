@@ -11,47 +11,76 @@
   <div class="container">
     <header>
       <h1>📎 Email Helper</h1>
-      <p class="subtitle">Tự động upload file lớn lên OneDrive</p>
+      <p class="subtitle">Upload file lên OneDrive</p>
     </header>
 
-    <section id="status-section" class="status-card status-active">
-      <div class="status-icon">✅</div>
-      <div class="status-text">
-        <h2 id="status-label">Đang hoạt động</h2>
-        <p id="status-detail">Sẵn sàng xử lý file lớn</p>
+    <!-- Step 1: Chọn file -->
+    <section id="step-upload" class="step-section">
+      <button id="btn-pick-file" class="btn-primary">
+        📂 Chọn file để upload
+      </button>
+      <input type="file" id="file-input" style="display: none;">
+      <div id="file-info" class="file-info" style="display: none;">
+        <span id="file-name"></span>
+        <span id="file-size" class="file-size"></span>
       </div>
     </section>
 
-    <section id="queue-section" class="queue-section" style="display: none;">
-      <h3>📋 File đang chờ upload</h3>
-      <ul id="queue-list" class="queue-list"></ul>
+    <!-- Step 2: Progress -->
+    <section id="step-progress" class="step-section" style="display: none;">
+      <p class="progress-label">⏳ Đang tải lên...</p>
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+      </div>
+      <p id="progress-text" class="progress-text">0%</p>
     </section>
 
-    <section class="info-section">
-      <h3>Cách hoạt động</h3>
-      <div class="info-step">
-        <span class="step-number">1</span>
-        <p>Đính kèm file bình thường vào email</p>
+    <!-- Step 3: Chọn quyền -->
+    <section id="step-permission" class="step-section" style="display: none;">
+      <p class="permission-label">Chọn quyền cho người nhận:</p>
+      <button id="btn-view" class="btn-permission btn-view">
+        👁 Chỉ xem
+      </button>
+      <button id="btn-edit" class="btn-permission btn-edit">
+        ✏️ Xem và sửa
+      </button>
+    </section>
+
+    <!-- Step 4: Thành công -->
+    <section id="step-done" class="step-section" style="display: none;">
+      <div class="done-card">
+        <p class="done-icon">✅</p>
+        <p class="done-text">Xong! Link đã chèn vào email.</p>
       </div>
-      <div class="info-step">
-        <span class="step-number">2</span>
-        <p>Nếu file lớn hơn 25MB, add-in tự động phát hiện</p>
+      <button id="btn-upload-more" class="btn-secondary">
+        📂 Upload thêm file
+      </button>
+    </section>
+
+    <!-- Step Error -->
+    <section id="step-error" class="step-section" style="display: none;">
+      <div class="error-card">
+        <p class="error-icon">❌</p>
+        <p id="error-text" class="error-text"></p>
       </div>
-      <div class="info-step">
-        <span class="step-number">3</span>
-        <p>Khi nhấn <strong>Gửi</strong>, file được upload lên OneDrive</p>
-      </div>
-      <div class="info-step">
-        <span class="step-number">4</span>
-        <p>Link tải file được chèn vào email tự động</p>
-      </div>
+      <button id="btn-retry" class="btn-secondary">
+        🔄 Thử lại
+      </button>
+    </section>
+
+    <!-- File Manager -->
+    <section id="file-manager" class="file-manager-section">
+      <h3>📋 File đã upload</h3>
+      <ul id="file-list" class="file-list">
+        <li class="file-list-empty">Chưa có file nào</li>
+      </ul>
     </section>
 
     <footer>
-      <p>Email Attachment Helper v0.1.0</p>
+      <p>Email Attachment Helper v0.2.0</p>
     </footer>
   </div>
 
-  <script type="module" src="taskpane.js"></script>
+  <script type="module" src="taskpane.ts"></script>
 </body>
 </html>

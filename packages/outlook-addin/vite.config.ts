@@ -1,13 +1,15 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import mkcert from 'vite-plugin-mkcert';
 
 export default defineConfig({
+  plugins: [mkcert()],
+  base: '/email-attachment-helper/',
   build: {
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        'commands/event-handlers': resolve(__dirname, 'src/commands/event-handlers.html'),
         'taskpane/taskpane': resolve(__dirname, 'src/taskpane/taskpane.html'),
       },
     },
@@ -21,6 +23,6 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    https: false,
+    https: true,
   },
 });

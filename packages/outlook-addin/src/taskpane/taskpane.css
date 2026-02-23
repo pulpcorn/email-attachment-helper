@@ -1,6 +1,6 @@
 /*
  * Email Attachment Helper - Outlook Add-in TaskPane Styles
- * Thiết kế cho người cao tuổi: chữ lớn, đơn giản
+ * Thiết kế cho người cao tuổi: chữ lớn, nút to, đơn giản
  */
 
 * {
@@ -16,7 +16,7 @@ body {
 }
 
 .container {
-  padding: 24px;
+  padding: 20px;
   max-width: 360px;
 }
 
@@ -30,103 +30,264 @@ header h1 {
 .subtitle {
   font-size: 14px;
   color: #666;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
-/* Status card */
-.status-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+/* Sections */
+.step-section {
+  margin-bottom: 16px;
+}
+
+/* Primary button (chọn file) */
+.btn-primary {
+  display: block;
+  width: 100%;
   padding: 16px 20px;
-  border-radius: 12px;
-  background: #f0faf4;
-  border: 1px solid #0d904f;
-  margin-bottom: 20px;
-}
-
-.status-icon {
-  font-size: 32px;
-  line-height: 1;
-}
-
-.status-text h2 {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 2px;
+  color: #fff;
+  background: #0078d4;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.status-text p {
-  font-size: 14px;
-  color: #666;
+.btn-primary:hover {
+  background: #005a9e;
 }
 
-/* Queue section */
-.queue-section {
-  margin-bottom: 20px;
+.btn-primary:active {
+  background: #004578;
 }
 
-.queue-section h3 {
+/* Secondary button */
+.btn-secondary {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
   font-size: 16px;
+  font-weight: 500;
+  color: #0078d4;
+  background: #e8f4fd;
+  border: 2px solid #0078d4;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #cce5f7;
+}
+
+/* File info */
+.file-info {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.file-size {
+  color: #888;
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+/* Progress */
+.progress-label {
+  font-size: 16px;
+  font-weight: 600;
   margin-bottom: 8px;
   color: #333;
 }
 
-.queue-list {
-  list-style: none;
-}
-
-.queue-item {
-  padding: 10px 14px;
-  background: #fff8e1;
-  border: 1px solid #ffc107;
+.progress-bar-container {
+  width: 100%;
+  height: 16px;
+  background: #e0e0e0;
   border-radius: 8px;
-  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #0078d4, #00bcf2);
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
   font-size: 15px;
+  color: #666;
+  text-align: center;
+  margin-top: 6px;
 }
 
-.queue-size {
-  color: #888;
-  font-size: 13px;
-}
-
-/* Info section */
-.info-section {
-  margin-bottom: 20px;
-}
-
-.info-section h3 {
+/* Permission buttons */
+.permission-label {
   font-size: 16px;
-  margin-bottom: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
   color: #333;
 }
 
-.info-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+.btn-permission {
+  display: block;
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 17px;
+  font-weight: 600;
+  border: 2px solid;
+  border-radius: 10px;
+  cursor: pointer;
   margin-bottom: 10px;
+  transition: background 0.2s, transform 0.1s;
 }
 
-.step-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
-  background: #0078d4;
-  color: white;
-  border-radius: 50%;
+.btn-permission:active {
+  transform: scale(0.98);
+}
+
+.btn-view {
+  color: #0078d4;
+  background: #e8f4fd;
+  border-color: #0078d4;
+}
+
+.btn-view:hover {
+  background: #cce5f7;
+}
+
+.btn-edit {
+  color: #107c10;
+  background: #f0faf0;
+  border-color: #107c10;
+}
+
+.btn-edit:hover {
+  background: #d4f0d4;
+}
+
+/* Done card */
+.done-card {
+  text-align: center;
+  padding: 20px;
+  background: #f0faf4;
+  border: 2px solid #107c10;
+  border-radius: 12px;
+}
+
+.done-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.done-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #107c10;
+}
+
+/* Error card */
+.error-card {
+  text-align: center;
+  padding: 20px;
+  background: #fef0f0;
+  border: 2px solid #d32f2f;
+  border-radius: 12px;
+}
+
+.error-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.error-text {
+  font-size: 16px;
+  color: #d32f2f;
+}
+
+/* File Manager */
+.file-manager-section {
+  margin-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+}
+
+.file-manager-section h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.file-list {
+  list-style: none;
+}
+
+.file-list-empty {
   font-size: 14px;
-  font-weight: 700;
+  color: #999;
+  font-style: italic;
+  padding: 8px 0;
 }
 
-.info-step p {
-  font-size: 15px;
-  line-height: 1.5;
-  color: #555;
+.file-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.file-list-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-list-item-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.file-list-item-size {
+  font-size: 12px;
+  color: #888;
+}
+
+.file-list-item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.btn-icon {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-icon:hover {
+  background: #f0f0f0;
+}
+
+.btn-icon-danger:hover {
+  background: #fef0f0;
+  border-color: #d32f2f;
 }
 
 /* Footer */
@@ -134,6 +295,7 @@ footer {
   padding-top: 16px;
   border-top: 1px solid #e8eaed;
   text-align: center;
+  margin-top: 16px;
 }
 
 footer p {

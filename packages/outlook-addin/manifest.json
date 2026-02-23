@@ -1,60 +1,43 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/vDevPreview/MicrosoftTeams.schema.json",
-  "id": "email-attachment-helper-addin",
-  "version": "0.1.0",
+  "id": "6a71bcce-b6c7-493a-a23d-c9bdcfaaee78",
+  "version": "0.2.0",
   "manifestVersion": "devPreview",
   "name": {
     "short": "Email Attachment Helper",
-    "full": "Email Attachment Helper - Tự động upload file lớn"
+    "full": "Email Attachment Helper - Upload file lên OneDrive"
   },
   "description": {
-    "short": "Tự động upload file lớn lên OneDrive và chèn link vào email",
-    "full": "Khi đính kèm file lớn hơn 25MB, add-in tự động upload lên OneDrive, set quyền chia sẻ, và chèn link vào email. Thiết kế cho người cao tuổi."
+    "short": "Upload file lên OneDrive và chèn link vào email",
+    "full": "Chọn file, upload lên OneDrive, chọn quyền xem hoặc chỉnh sửa, và chèn link vào email. Thiết kế cho người cao tuổi."
   },
   "developer": {
     "name": "Email Helper",
-    "websiteUrl": "https://localhost:3000",
-    "privacyUrl": "https://localhost:3000/privacy",
-    "termsOfUseUrl": "https://localhost:3000/terms"
+    "websiteUrl": "https://pulpcorn.github.io/email-attachment-helper",
+    "privacyUrl": "https://pulpcorn.github.io/email-attachment-helper",
+    "termsOfUseUrl": "https://pulpcorn.github.io/email-attachment-helper"
   },
   "icons": {
     "outline": "icons/outline-32.png",
     "color": "icons/color-192.png"
   },
+  "accentColor": "#0078D4",
   "extensions": [
     {
       "requirements": {
         "capabilities": [
           {
             "name": "Mailbox",
-            "minVersion": "1.12"
+            "minVersion": "1.5"
           }
         ]
       },
       "runtimes": [
         {
-          "id": "EventRuntime",
-          "type": "general",
-          "code": {
-            "page": "https://localhost:3000/src/commands/event-handlers.html"
-          },
-          "lifetime": "short",
-          "actions": [
-            {
-              "id": "onAttachmentsChanged",
-              "type": "executeFunction"
-            },
-            {
-              "id": "onMessageSend",
-              "type": "executeFunction"
-            }
-          ]
-        },
-        {
           "id": "TaskPaneRuntime",
           "type": "general",
           "code": {
-            "page": "https://localhost:3000/src/taskpane/taskpane.html"
+            "page": "https://pulpcorn.github.io/email-attachment-helper/taskpane/taskpane.html"
           }
         }
       ],
@@ -71,62 +54,45 @@
                   "icons": [
                     {
                       "size": 16,
-                      "url": "icons/icon-16.png"
+                      "url": "https://pulpcorn.github.io/email-attachment-helper/icons/icon-16.png"
                     },
                     {
                       "size": 32,
-                      "url": "icons/icon-32.png"
+                      "url": "https://pulpcorn.github.io/email-attachment-helper/icons/icon-32.png"
+                    },
+                    {
+                      "size": 80,
+                      "url": "https://pulpcorn.github.io/email-attachment-helper/icons/icon-32.png"
                     }
                   ],
                   "controls": [
                     {
                       "id": "openTaskPane",
                       "type": "button",
-                      "label": "Trạng thái",
+                      "label": "📎 Upload File",
                       "icons": [
                         {
                           "size": 16,
-                          "url": "icons/icon-16.png"
+                          "url": "https://pulpcorn.github.io/email-attachment-helper/icons/icon-16.png"
                         },
                         {
                           "size": 32,
-                          "url": "icons/icon-32.png"
+                          "url": "https://pulpcorn.github.io/email-attachment-helper/icons/icon-32.png"
+                        },
+                        {
+                          "size": 80,
+                          "url": "https://pulpcorn.github.io/email-attachment-helper/icons/icon-32.png"
                         }
                       ],
                       "supertip": {
-                        "title": "Email Attachment Helper",
-                        "description": "Xem trạng thái upload file lớn"
+                        "title": "Upload File lên OneDrive",
+                        "description": "Chọn file, upload lên OneDrive và chèn link vào email"
                       },
                       "actionId": "openTaskPane"
                     }
                   ]
                 }
               ]
-            }
-          ]
-        }
-      ],
-      "autoRunEvents": [
-        {
-          "requirements": {
-            "capabilities": [
-              {
-                "name": "Mailbox",
-                "minVersion": "1.12"
-              }
-            ]
-          },
-          "events": [
-            {
-              "type": "messageAttachmentsChanged",
-              "actionId": "onAttachmentsChanged"
-            },
-            {
-              "type": "messageSending",
-              "actionId": "onMessageSend",
-              "options": {
-                "sendMode": "softBlock"
-              }
             }
           ]
         }
@@ -144,7 +110,7 @@
     }
   },
   "webApplicationInfo": {
-    "id": "YOUR_MICROSOFT_APP_ID",
-    "resource": "api://localhost:3000/YOUR_MICROSOFT_APP_ID"
+    "id": "6a71bcce-b6c7-493a-a23d-c9bdcfaaee78",
+    "resource": "api://pulpcorn.github.io/email-attachment-helper/6a71bcce-b6c7-493a-a23d-c9bdcfaaee78"
   }
 }

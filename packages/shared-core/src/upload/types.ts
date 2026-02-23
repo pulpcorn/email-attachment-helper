@@ -69,7 +69,7 @@ export interface UploadProvider {
   /** Upload file lên cloud */
   upload(file: FileInfo, options: UploadOptions): Promise<UploadResult>;
   /** Set sharing permission */
-  setPermission(fileId: string, accessToken: string): Promise<string>;
+  setPermission(fileId: string, accessToken: string, permissionType?: 'view' | 'edit'): Promise<string>;
 }
 
 /** Error types cho upload */
