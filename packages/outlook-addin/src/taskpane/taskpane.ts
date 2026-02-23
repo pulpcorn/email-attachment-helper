@@ -117,7 +117,7 @@ function getAccessToken(): Promise<string> {
   return new Promise((resolve, reject) => {
     Office.context.ui.displayDialogAsync(
       AUTH_DIALOG_URL,
-      { height: 60, width: 40, promptBeforeOpen: false },
+      { height: 60, width: 40, promptBeforeOpen: false, displayInIframe: true },
       (asyncResult) => {
         if (asyncResult.status !== Office.AsyncResultStatus.Succeeded) {
           reject(new Error('Không thể mở cửa sổ đăng nhập'));
